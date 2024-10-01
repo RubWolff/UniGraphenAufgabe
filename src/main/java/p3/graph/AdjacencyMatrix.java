@@ -1,5 +1,6 @@
 package p3.graph;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.tudalgo.algoutils.student.Student.crash;
@@ -38,17 +39,23 @@ public class AdjacencyMatrix implements AdjacencyRepresentation {
 
     @Override
     public void addEdge(int from, int to) {
-        crash(); //TODO: H1 a) - remove if implemented
+        matrix[from][to] = true;
     }
 
     @Override
     public boolean hasEdge(int from, int to) {
-        return crash(); //TODO: H1 a) - remove if implemented
+        return matrix[from][to];
     }
 
     @Override
     public Set<Integer> getAdjacentIndices(int index) {
-        return crash(); //TODO: H1 a) - remove if implemented
+        Set<Integer> adjacentIndices = new HashSet<>();
+        for (int i = 0; i < matrix.length; i++) {
+            if(matrix[index][i]) {
+                adjacentIndices.add(i);
+            }
+        }
+        return adjacentIndices;
     }
 
     @Override

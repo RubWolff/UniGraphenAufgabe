@@ -52,18 +52,31 @@ public class AdjacencyGraph<N> implements MutableGraph<N> {
      */
     public AdjacencyGraph(Set<N> nodes, Set<Edge<N>> edges, AdjacencyRepresentation.Factory representationFactory) {
         representation = representationFactory.create(nodes.size());
-
-        crash(); //TODO: H1 c) - remove if implemented
+        for(N node : nodes) {
+            addNode(node);
+        }
+        for(Edge<N> edge : edges) {
+            addEdge(edge);
+        }
     }
 
     @Override
     public void addNode(N node) {
-        crash(); //TODO: H1 c) - remove if implemented
+        if(nodeToIndex.containsKey(node)) {
+            return;
+        }
+        int index = nodeToIndex.size();
+        nodeToIndex.put(node, index);
+        indexToNode.put(index, node);
+        representation.grow();
     }
 
     @Override
     public void addEdge(Edge<N> edge) {
-        crash(); //TODO: H1 c) - remove if implemented
+        int fromIndex = nodeToIndex.get(edge.from());
+        int toIndex = nodeToIndex.get(edge.to());
+        representation.addEdge(fromIndex, toIndex);
+        weights.get(fromIndex).put(edge.to(), 1);
     }
 
     @Override
@@ -84,7 +97,18 @@ public class AdjacencyGraph<N> implements MutableGraph<N> {
 
     @Override
     public Set<Edge<N>> getOutgoingEdges(N node) {
-        return crash(); //TODO: H1 c) - remove if implemented
+        Set<Edge<N>> set = new HashSet<>();
+        Integer index = nodeToIndex.get(node);
+        if(index == null) {
+            return set;
+        }
+        Set<Integer> adjacentindices = representation.getAdjacentIndices(index);
+        for(Integer adjacentIndex : adjacentindices) {
+            N toNode = indexToNode.get(adjacentIndex);
+            int weight = weights.get(node).get(toNode);
+            set.add(Edge.of(node,toNode,weight));
+        }
+        return set;
     }
 
     @Override
@@ -104,7 +128,13 @@ public class AdjacencyGraph<N> implements MutableGraph<N> {
 
     @Override
     public Edge<N> getEdge(N from, N to) {
-        return crash(); //TODO: H1 c) - remove if implemented
+        Integer fromIndex = nodeToIndex.get(from);
+        Integer toIndex = nodeToIndex.get(to);
+        if(fromIndex == null || toIndex == null || !representation.hasEdge(fromIndex, toIndex)) {
+            return null;
+        }
+        int weight = weights.get(fromIndex).get(to);
+        return Edge.of(from, to, weight);
     }
 
     /**

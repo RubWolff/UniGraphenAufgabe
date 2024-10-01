@@ -70,7 +70,12 @@ public class DFS<N> implements GraphTraverser<N> {
 
     @Override
     public void traverse(ObjIntConsumer<N> consumer) {
-        crash(); //TODO: H2 a) - remove if implemented
+        init();
+        for (N node : graph.getNodes()) {
+            if(colors.get(node) == Color.WHITE){
+                visit(consumer, node);
+            }
+        }
     }
 
     /**
@@ -91,7 +96,14 @@ public class DFS<N> implements GraphTraverser<N> {
      * the time is set to 0.
      */
     protected void init() {
-        crash(); //TODO: H2 a) - remove if implemented
+        for (N n : graph.getNodes()) {
+            colors.put(n, Color.WHITE);
+            predecessors.put(n, null);
+            discoveryTimes.put(n, 0);
+            finishTimes.put(n, 0);
+        }
+        time = 0;
+        cyclic = false;
     }
 
     /**
@@ -104,7 +116,21 @@ public class DFS<N> implements GraphTraverser<N> {
      * @param current  Node that is processed by this method
      */
     protected void visit(ObjIntConsumer<N> consumer, N current) {
-        crash(); //TODO: H2 a) & b) - remove if implemented
+        time = time + 1;
+        discoveryTimes.put(current, time);
+        colors.put(current, Color.GRAY);
+        for(N n: graph.getAdjacentNodes(current)){
+            if(colors.get(n) == Color.WHITE){
+                predecessors.put(n, current);
+                visit(consumer, n);
+            }else if (colors.get(n) == Color.GRAY){
+                cyclic = true;
+            }
+        }
+        colors.put(current, Color.BLACK);
+        time = time+1;
+        consumer.accept(current, time);
+        finishTimes.put(current, time);
     }
 
     /**

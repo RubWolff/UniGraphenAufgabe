@@ -57,7 +57,12 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
 
     @Override
     public Graph<N> calculateMST(N root) {
-        return crash(); //TODO: H4 e) - remove if implemented
+        init(root);
+        while (!remainingNodes.isEmpty()) {
+            N node = extractMin();
+            processNode(node);
+        }
+        return Graph.of(graph.getNodes(), calculateMSTEdges());
     }
 
     /**
@@ -66,7 +71,12 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
      * @param node current node processed by the algorithm
      */
     protected void processNode(N node) {
-        crash(); //TODO: H4 c) - remove if implemented
+        for(N n : predecessors.keySet()) {
+            if(remainingNodes.contains(n) && graph.getEdge(node, n).weight() < keys.get(n) ) {
+                keys.put(n, graph.getEdge(node, n).weight());
+                predecessors.put(n, node);
+            }
+        }
     }
 
     /**
@@ -75,7 +85,13 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
      * @param root the root node of the calculated mst.
      */
     protected void init(N root) {
-        crash(); //TODO: H4 a) - remove if implemented
+        for(N node : graph.getNodes()){
+            predecessors.put(node, null);
+            keys.put(node, Integer.MAX_VALUE);
+            remainingNodes.add(node);
+        }
+        keys.put(root, Integer.MIN_VALUE);
+
     }
 
     /**
@@ -84,7 +100,16 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
      * @return the node in the remaining nodes set with the smallest key.
      */
     protected N extractMin() {
-        return crash(); //TODO: H4 b) - remove if implemented
+        N min = null;
+        int max = Integer.MAX_VALUE;
+        for(N node : remainingNodes){
+            if(keys.get(node) <= max){
+                max = keys.get(node);
+                min = node;
+            }
+        }
+        remainingNodes.remove(min);
+        return min;
     }
 
     /**
@@ -94,6 +119,10 @@ public class PrimMSTCalculator<N> implements MSTCalculator<N> {
      * @return the edges of the minimum spanning tree
      */
     protected Set<Edge<N>> calculateMSTEdges() {
-        return crash(); //TODO: H4 d) - remove if implemented
+        Set<Edge<N>> edges = new HashSet<>();
+        for(N node : graph.getNodes()){
+            edges.add(graph.getEdge(node, predecessors.get(node)));
+        }
+        return edges;
     }
 }

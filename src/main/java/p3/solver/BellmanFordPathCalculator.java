@@ -51,7 +51,13 @@ public class BellmanFordPathCalculator<N> implements PathCalculator<N> {
 
     @Override
     public List<N> calculatePath(N start, N end) {
-        return crash(); //TODO: H3 e) - remove if implemented
+        initSSSP(start);
+        processGraph();
+        if(hasNegativeCycle()){
+            throw new CycleException("Negative cycle");
+        }else{
+            return reconstructPath(start, end);
+        }
     }
 
 
@@ -61,14 +67,22 @@ public class BellmanFordPathCalculator<N> implements PathCalculator<N> {
      * @param start the start node of the algorithm.
      */
     protected void initSSSP(N start) {
-        crash(); //TODO: H3 a) - remove if implemented
+        for(N n : graph.getNodes()){
+            distances.put(n, Integer.MAX_VALUE);
+            predecessors.put(n, null);
+        }
+        distances.put(start, 0);
     }
 
     /**
      * Processes the given graph with the Bellman-Ford algorithm.
      */
     protected void processGraph() {
-        crash(); //TODO: H3 c) - remove if implemented
+        for (int i = 1; i <= graph.getNodes().size()-1; i++) {
+            for(Edge<N> e : graph.getEdges()){
+                    relax(e);
+            }
+        }
     }
 
     /**
@@ -80,7 +94,10 @@ public class BellmanFordPathCalculator<N> implements PathCalculator<N> {
      * @param edge the edge to relax.
      */
     protected void relax(Edge<N> edge) {
-        crash(); //TODO: H3 b) - remove if implemented
+        if(distances.get(edge.to()) > distances.get(edge.from()) + edge.weight() && distances.get(edge.from()) != Integer.MAX_VALUE) {
+            distances.put(edge.to(), distances.get(edge.from()) + edge.weight());
+            predecessors.put(edge.to(), edge.from());
+        }
     }
 
     /**
@@ -89,7 +106,12 @@ public class BellmanFordPathCalculator<N> implements PathCalculator<N> {
      * @return {@code true} if the graph contains a negative cycle, {@code false} otherwise.
      */
     protected boolean hasNegativeCycle() {
-        return crash(); //TODO: H3 d) - remove if implemented
+        for(Edge<N> edge : graph.getEdges()) {
+            if(distances.get(edge.to()) > distances.get(edge.from()) + edge.weight()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

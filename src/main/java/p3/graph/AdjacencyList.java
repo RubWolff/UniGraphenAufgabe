@@ -2,6 +2,7 @@ package p3.graph;
 
 import p3.solver.MSTCalculator;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -45,17 +46,21 @@ public class AdjacencyList implements AdjacencyRepresentation {
 
     @Override
     public void addEdge(int from, int to) {
-        crash(); //TODO: H1 b) - remove if implemented
+        adjacencyList[from].add(to);
     }
 
     @Override
     public boolean hasEdge(int from, int to) {
-        return crash(); //TODO: H1 b) - remove if implemented
+        return adjacencyList[from].contains(to);
     }
 
     @Override
     public Set<Integer> getAdjacentIndices(int index) {
-        return crash(); //TODO: H1 b) - remove if implemented
+        Set<Integer> result = new HashSet<>();
+        for (int i = 0; i < adjacencyList[index].size(); i++) {
+            result.add(adjacencyList[index].get(i));
+        };
+        return result;
     }
 
     @Override
